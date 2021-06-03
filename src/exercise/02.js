@@ -4,36 +4,36 @@
 import * as React from 'react'
 import {Switch} from '../switch'
 
-function Toggle() {
-  const [on, setOn] = React.useState(false)
-  const toggle = () => setOn(!on)
-
-  // 🐨 replace this with a call to React.Children.map and map each child in
-  // props.children to a clone of that child with the props they need using
-  // React.cloneElement.
-  // 💰 React.Children.map(props.children, child => {/* return child clone here */})
-  // 📜 https://reactjs.org/docs/react-api.html#reactchildren
-  // 📜 https://reactjs.org/docs/react-api.html#cloneelement
-  return <Switch on={on} onClick={toggle} />
+function isCompositeComponent(component) {
+  return typeof component.type === 'function';
 }
 
-// 🐨 Flesh out each of these components
+function Toggle({ children }) {
+  const [on, setOn] = React.useState(false)
+  const toggle = () => setOn(!on)
+  
+  return React.Children.map(children, child => {
+    const isComposite = isCompositeComponent(child);
+    return isComposite ? React.cloneElement(child, { on, toggle }) : child;
+  });
+}
 
 // Accepts `on` and `children` props and returns `children` if `on` is true
-const ToggleOn = () => null
+const ToggleOn = ({ on, children }) => on ? children : null;
 
 // Accepts `on` and `children` props and returns `children` if `on` is false
-const ToggleOff = () => null
+const ToggleOff = ({ on, children }) => !on ? children : null;
 
 // Accepts `on` and `toggle` props and returns the <Switch /> with those props.
-const ToggleButton = () => null
+const ToggleButton = ({ on, toggle }) => <Switch on={on} onClick={toggle} />
 
 function App() {
   return (
     <div>
       <Toggle>
-        <ToggleOn>The button is on</ToggleOn>
+        <ToggleOn>The buttton is on</ToggleOn>
         <ToggleOff>The button is off</ToggleOff>
+        <span>Hello</span>
         <ToggleButton />
       </Toggle>
     </div>
